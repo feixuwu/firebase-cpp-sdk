@@ -239,6 +239,60 @@ App::~App() {
   internal_ = nullptr;
 }
 
+
+static void PlatformPlistOptionsToAppOptions(NSMutableDictionary * dict,
+		AppOptions* app_options) {
+		if (!strlen(app_options->app_id())) {
+			const char* value = ((NSString*)dict[@"GOOGLE_APP_ID"]).UTF8String;// platform_options.googleAppID.UTF8String;
+			if (value) app_options->set_app_id(value);
+		}
+		if (!strlen(app_options->api_key())) {
+			const char* value = ((NSString*)dict[@"API_KEY"]).UTF8String;// platform_options.APIKey.UTF8String;
+			if (value) app_options->set_api_key(value);
+		}
+		/*if (!strlen(app_options->package_name())) {
+			const char* value = platform_options.bundleID.UTF8String;
+			if (value) app_options->set_package_name(value);
+		}*/
+		if (!strlen(app_options->messaging_sender_id())) {
+			const char* value = ((NSString*)dict[@"GCM_SENDER_ID"]).UTF8String;// platform_options.GCMSenderID.UTF8String;
+			if (value) app_options->set_messaging_sender_id(value);
+		}
+		if (!strlen(app_options->database_url())) {
+			const char* value = ((NSString*)dict[@"DATABASE_URL"]).UTF8String;// platform_options.databaseURL.UTF8String;
+			if (value) app_options->set_database_url(value);
+		}
+		if (!strlen(app_options->ga_tracking_id())) {
+			const char* value = ((NSString*)dict[@"TRACKING_ID"]).UTF8String;// platform_options.trackingID.UTF8String;
+			if (value) app_options->set_ga_tracking_id(value);
+		}
+		if (!strlen(app_options->storage_bucket())) {
+			const char* value = ((NSString*)dict[@"STORAGE_BUCKET"]).UTF8String;// platform_options.storageBucket.UTF8String;
+			if (value) app_options->set_storage_bucket(value);
+		}
+		if (!strlen(app_options->project_id())) {
+			NSString* value = (NSString*)dict[@"PROJECT_ID"];// platform_options.projectID;
+			if (value) app_options->set_project_id(value.UTF8String);
+		}
+		/*if (!strlen(app_options->client_id())) {
+			const char* value = ((NSString*)dict[@"CLIENT_ID"]).UTF8String;// platform_options.clientID.UTF8String;
+			if (value) app_options->set_client_id(value);
+		}*/
+	}
+
+AppOptions LoadOptionFromPlist(const std::string& plist_path) {
+  NSString* nsStringPath = [[NSString alloc] initWithUTF8String:plist_path.c_str()];
+  NSDictionary * dict = [NSDictionary dictionaryWithContentsOfFile : nsStringPath];
+  firebase::AppOptions option;
+  PlatformPlistOptionsToAppOptions([dict mutableCopy], &option);
+  return option;
+}
+
+App* CreateAppFromPlist(const std::string& plist_path) {
+  AppOptions options = LoadOptionFromPlist(plist_path);
+  return App::Create(options);
+}
+
 App* App::Create() {
   AppOptions options;
   return AppOptions::LoadDefault(&options) ? Create(options) : nullptr;

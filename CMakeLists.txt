@@ -328,6 +328,7 @@ if(DESKTOP)
     #
     # If the find_package fails to find OpenSSL, set OPENSSL_ROOT_DIR to OpenSSL'S install
     # location on your system.
+    set(OpenSSL_DIR /Volumes/Samsung_T5/App/EpicGames/UE_5.3/Engine/Source/ThirdParty/OpenSSL/1.1.1t)
     find_package(OpenSSL REQUIRED)
   endif()
 endif()
