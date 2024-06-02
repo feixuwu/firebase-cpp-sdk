@@ -225,13 +225,17 @@ class LibraryRegistry {
   void UpdateUserAgent() {
     user_agent_.clear();
     for (auto it = library_to_version_.begin(); it != library_to_version_.end();
-         ++it) {
-      user_agent_ += it->first + "/" + it->second + " ";
+         ) {
+      user_agent_ += it->first + "/";// + it->second + " ";
+      it++;
+      if(it != library_to_version_.end()) {
+        user_agent_ += " ";
+      }
     }
     // Removing the trailing space.
-    if (!user_agent_.empty()) {
+    /*if (!user_agent_.empty()) {
       user_agent_ = user_agent_.substr(0, user_agent_.length() - 1);
-    }
+    }*/
   }
 
   // Get the cached user agent string.
